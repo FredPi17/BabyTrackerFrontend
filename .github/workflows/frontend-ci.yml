@@ -42,7 +42,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        run: docker buildx build --load -t fredericpinaud/babytrackerfrontend:develop -f Dockerfile .
+        run: docker buildx build --push --load -t fredericpinaud/babytrackerfrontend:develop -f Dockerfile .
 
   main-release:
     if: github.ref == 'refs/heads/main'
@@ -63,4 +63,4 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        run: docker buildx build --load -t fredericpinaud/babytrackerfrontend:prod -f Dockerfile .
+        run: docker buildx build --push --load -t fredericpinaud/babytrackerfrontend:prod -f Dockerfile .
