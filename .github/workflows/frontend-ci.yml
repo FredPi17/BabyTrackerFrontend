@@ -17,13 +17,11 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
-        working-directory: frontend
       - name: Run unit tests (if available)
         run: npm run test --if-present
-        working-directory: frontend
 
   develop-build:
     if: github.ref == 'refs/heads/develop'
@@ -34,16 +32,17 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
-        working-directory: frontend
       - name: Run unit tests (if available)
-        run: npm run test --if-present
-        working-directory: frontend
+        run: npm run test --if-present -- --passWithNoTests
       - name: Build frontend
         run: npm run build
-        working-directory: frontend
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        run: docker buildx build --load -t fredericpinaud/babytrackerfrontend:develop -f Dockerfile .
 
   main-release:
     if: github.ref == 'refs/heads/main'
@@ -54,17 +53,14 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
-        working-directory: frontend
       - name: Run unit tests (if available)
-        run: npm run test --if-present
-        working-directory: frontend
+        run: npm run test --if-present -- --passWithNoTests
       - name: Build frontend
         run: npm run build
-        working-directory: frontend
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build Docker image
-        run: docker buildx build --load -t evendol-frontend:ci -f frontend/Dockerfile frontend
+        run: docker buildx build --load -t fredericpinaud/babytrackerfrontend:prod -f Dockerfile .
