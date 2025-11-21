@@ -22,7 +22,16 @@ const resolveApiBaseUrl = () => {
   return 'http://localhost:3000'
 }
 
-const API_URL = resolveApiBaseUrl().replace(/\/$/, '')
+// Avoid double /api/api when users set VITE_API_URL to ".../api"
+const normalizeApiBaseUrl = (url: string) => {
+  const trimmed = url.trim().replace(/\/+$/, '')
+  if (trimmed.toLowerCase().endsWith('/api')) {
+    return trimmed.slice(0, -4)
+  }
+  return trimmed
+}
+
+const API_URL = normalizeApiBaseUrl(resolveApiBaseUrl())
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
